@@ -75,10 +75,7 @@ export default function TradeAnalyzer() {
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Number of QBs</label>
-              <input
-                type="number"
-                min="1"
-                max="2"
+              <select
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 value={leagueSettings.numQbs}
                 onChange={(e) =>
@@ -87,7 +84,10 @@ export default function TradeAnalyzer() {
                     numQbs: parseInt(e.target.value),
                   })
                 }
-              />
+              >
+                <option value="1">1 QB</option>
+                <option value="2">2 QB</option>
+              </select>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">PPR</label>
