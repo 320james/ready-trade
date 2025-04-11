@@ -65,7 +65,7 @@ export default function TradeAnalysis({
   // Determine if the trade is good, bad, or neutral with adjusted thresholds
   let statusIcon = <Minus className="h-5 w-5" />;
   let statusText = 'This trade is perfectly balanced, as all things should be.';
-  const statusClass = cn('flex items-center gap-2 p-4 rounded-lg', {
+  const statusClass = cn('p-4 rounded-lg max-w-[700px]', {
     'bg-red-500/10 text-red-500 dark:text-red-400': valueDifference < -30,
     'bg-yellow-500/10 text-yellow-500 dark:text-yellow-400':
       valueDifference >= -30 && valueDifference < -15,
@@ -126,10 +126,6 @@ export default function TradeAnalysis({
     statusText = 'This trade is balanced, as all things should be.';
   }
 
-  if (playersGiving.length > 4 || playersGetting.length > 4) {
-    statusText = 'Lol, are you sure this is going to work?';
-  }
-
   // Calculate percentages for the progress bar
   const givingPercent = totalValue > 0 ? (givingValue / totalValue) * 100 : 50;
   const gettingPercent =
@@ -145,14 +141,27 @@ export default function TradeAnalysis({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col items-center justify-center gap-2 py-5 px-4 bg-secondary rounded-lg mt-3">
-        <div className="flex items-center gap-2">
-          {statusIcon}
-          <span className={statusClass}>{statusText}</span>
+      <div className="bg-secondary rounded-lg p-4">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex-shrink-0">{statusIcon}</div>
+          <div
+            className={cn('p-4 rounded-lg max-w-[800px] flex justify-center', {
+              'bg-red-500/10 text-red-500 dark:text-red-400':
+                valueDifference < -30,
+              'bg-yellow-500/10 text-yellow-500 dark:text-yellow-400':
+                valueDifference >= -30 && valueDifference < -15,
+              'bg-green-500/10 text-green-500 dark:text-green-400':
+                valueDifference >= -15 && valueDifference < 15,
+              'bg-blue-500/10 text-blue-500 dark:text-blue-400':
+                valueDifference >= 15,
+            })}
+          >
+            <p className="text-center">{statusText}</p>
+          </div>
         </div>
         {valueDifference !== 0 && (
-          <div className="text-sm text-muted-foreground mt-1 space-y-1">
-            <p>
+          <div className="flex flex-col items-center mt-2 space-y-1">
+            <p className="text-sm text-muted-foreground text-center">
               {Math.abs(valueDifference).toFixed(1)} point{' '}
               {Math.abs(valueDifference).toFixed(1) === '1.0'
                 ? 'difference'
@@ -161,7 +170,7 @@ export default function TradeAnalysis({
               {valueDifference > 0 ? ' your favor' : ' their favor'}
             </p>
             {redraftValueDifference !== 0 && (
-              <p>
+              <p className="text-sm text-muted-foreground text-center">
                 {Math.abs(redraftValueDifference).toFixed(1)} redraft value{' '}
                 {Math.abs(redraftValueDifference).toFixed(1) === '1.0'
                   ? 'difference'
@@ -171,7 +180,7 @@ export default function TradeAnalysis({
               </p>
             )}
             {rankDifference !== 0 && (
-              <p>
+              <p className="text-sm text-muted-foreground text-center">
                 Average rank {Math.abs(rankDifference).toFixed(1)} positions{' '}
                 {rankDifference > 0 ? 'better' : 'worse'} for you
               </p>
