@@ -45,13 +45,28 @@ export default function PlayerSelector({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const selectedPlayerIds = useMemo(
+    () => new Set(selectedPlayers.map((p) => p.id)),
+    [selectedPlayers]
+  );
+
+  // Cache for API responses
+  const [apiCache, setApiCache] = useState<Record<string, Player[]>>({});
 
   const loadPlayers = useCallback(async () => {
+    const cacheKey = JSON.stringify(leagueSettings);
+
+    // Check cache first
+    if (apiCache[cacheKey]) {
+      setPlayers(apiCache[cacheKey]);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     try {
       const response = await fetchFantasyCalcPlayers(leagueSettings);
-      // Transform the API response to match our Player interface
+      // Transform and pre-process the API response
       const transformedPlayers: Player[] = (
         response as FantasyCalcResponse
       ).map((item) => ({
@@ -70,6 +85,9 @@ export default function PlayerSelector({
         maybeAdp: item.maybeAdp,
         maybeTradeFrequency: item.maybeTradeFrequency,
       }));
+
+      // Cache the transformed players
+      setApiCache((prev) => ({ ...prev, [cacheKey]: transformedPlayers }));
       setPlayers(transformedPlayers);
     } catch (error) {
       console.error('Failed to load players:', error);
@@ -78,7 +96,7 @@ export default function PlayerSelector({
     } finally {
       setIsLoading(false);
     }
-  }, [leagueSettings]);
+  }, [leagueSettings, apiCache]);
 
   useEffect(() => {
     loadPlayers();
@@ -94,13 +112,16 @@ export default function PlayerSelector({
   };
 
   const filteredPlayers = useMemo(() => {
+    if (!search)
+      return players.filter((player) => !selectedPlayerIds.has(player.id));
+
     const searchLower = search.toLowerCase();
     return players.filter(
       (player) =>
-        !selectedPlayers.some((selected) => selected.id === player.id) &&
+        !selectedPlayerIds.has(player.id) &&
         player.name.toLowerCase().includes(searchLower)
     );
-  }, [players, selectedPlayers, search]);
+  }, [players, selectedPlayerIds, search]);
 
   const handleSelect = (player: Player) => {
     onChange([...selectedPlayers, player]);

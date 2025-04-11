@@ -46,6 +46,9 @@ export default function TradeAnalysis({
   const redraftValueDifference = gettingRedraftValue - givingRedraftValue;
   const totalValue = givingValue + gettingValue;
 
+  // Format value for display
+  const formatValue = (value: number) => (value / 100).toFixed(1);
+
   // Calculate average ranks
   const givingAvgRank =
     playersGiving.reduce((sum, player) => sum + player.overallRank, 0) /
@@ -60,26 +63,26 @@ export default function TradeAnalysis({
   let statusText = 'This trade is perfectly balanced, as all things should be.';
   let statusClass = 'text-gray-500';
 
-  // Adjusted thresholds based on actual value ranges (values are in thousands)
+  // Adjusted thresholds based on actual value ranges (values are in hundreds)
   if (
-    valueDifference > 2000 ||
-    redraftValueDifference > 2000 ||
+    valueDifference > 200 ||
+    redraftValueDifference > 200 ||
     rankDifference > 20
   ) {
     statusIcon = <PartyPopper className="h-5 w-5" />;
     statusText = 'Highway robbery! Accept before they come to their senses.';
     statusClass = 'text-white';
   } else if (
-    valueDifference > 1000 ||
-    redraftValueDifference > 1000 ||
+    valueDifference > 100 ||
+    redraftValueDifference > 100 ||
     rankDifference > 10
   ) {
     statusIcon = <ThumbsUp className="h-5 w-5" />;
     statusText = "Solid win for you. They clearly didn't do their homework.";
     statusClass = 'text-gray-300';
   } else if (
-    valueDifference > 500 ||
-    redraftValueDifference > 500 ||
+    valueDifference > 50 ||
+    redraftValueDifference > 50 ||
     rankDifference > 5
   ) {
     statusIcon = <Laugh className="h-5 w-5" />;
@@ -87,8 +90,8 @@ export default function TradeAnalysis({
       "Slight edge in your favor. They won't even notice what hit them.";
     statusClass = 'text-gray-400';
   } else if (
-    valueDifference < -2000 ||
-    redraftValueDifference < -2000 ||
+    valueDifference < -20 ||
+    redraftValueDifference < -20 ||
     rankDifference < -20
   ) {
     statusIcon = <Skull className="h-5 w-5" />;
@@ -96,16 +99,16 @@ export default function TradeAnalysis({
       'Are you trying to get fleeced? Maybe reconsider your life choices.';
     statusClass = 'text-white';
   } else if (
-    valueDifference < -1000 ||
-    redraftValueDifference < -1000 ||
+    valueDifference < -10 ||
+    redraftValueDifference < -10 ||
     rankDifference < -10
   ) {
     statusIcon = <AlertTriangle className="h-5 w-5" />;
     statusText = "You're getting the short end of the stick here. Hard pass.";
     statusClass = 'text-gray-300';
   } else if (
-    valueDifference < -500 ||
-    redraftValueDifference < -500 ||
+    valueDifference < -5 ||
+    redraftValueDifference < -50 ||
     rankDifference < -5
   ) {
     statusIcon = <Frown className="h-5 w-5" />;
@@ -170,7 +173,7 @@ export default function TradeAnalysis({
       <div className="grid grid-cols-3 gap-4 items-center">
         <div className="text-center">
           <p className="text-sm font-medium mb-1">You Give</p>
-          <p className="text-2xl font-bold">{givingValue}</p>
+          <p className="text-2xl font-bold">{formatValue(givingValue)}</p>
           <p className="text-sm text-muted-foreground">
             Avg Rank: {givingAvgRank.toFixed(1)}
           </p>
@@ -182,7 +185,7 @@ export default function TradeAnalysis({
 
         <div className="text-center">
           <p className="text-sm font-medium mb-1">You Get</p>
-          <p className="text-2xl font-bold">{gettingValue}</p>
+          <p className="text-2xl font-bold">{formatValue(gettingValue)}</p>
           <p className="text-sm text-muted-foreground">
             Avg Rank: {gettingAvgRank.toFixed(1)}
           </p>
@@ -202,7 +205,7 @@ export default function TradeAnalysis({
             )}
           >
             {valueDifference > 0 ? '+' : ''}
-            {valueDifference}
+            {formatValue(valueDifference)}
           </span>
         </div>
         <div className="h-2.5 flex rounded-full overflow-hidden">
@@ -257,11 +260,21 @@ export default function TradeAnalysis({
                   key={player.id}
                   className="flex justify-between text-sm pt-2"
                 >
-                  <span>
-                    {player.name} ({player.position}) - Rank #
-                    {player.overallRank}
+                  <div className="space-y-1">
+                    <span className="font-medium">
+                      {player.name} ({player.position})
+                    </span>
+                    <div className="text-xs text-muted-foreground">
+                      <span>Overall Rank: #{player.overallRank}</span>
+                      <span className="mx-2">•</span>
+                      <span>
+                        {player.position} Rank: #{player.positionRank}
+                      </span>
+                    </div>
+                  </div>
+                  <span className="font-medium">
+                    {formatValue(player.value)}
                   </span>
-                  <span className="font-medium">{player.value}</span>
                 </li>
               ))}
             </ul>
@@ -274,11 +287,21 @@ export default function TradeAnalysis({
                   key={player.id}
                   className="flex justify-between text-sm pt-2"
                 >
-                  <span>
-                    {player.name} ({player.position}) - Rank #
-                    {player.overallRank}
+                  <div className="space-y-1">
+                    <span className="font-medium">
+                      {player.name} ({player.position})
+                    </span>
+                    <div className="text-xs text-muted-foreground">
+                      <span>Overall Rank: #{player.overallRank}</span>
+                      <span className="mx-2">•</span>
+                      <span>
+                        {player.position} Rank: #{player.positionRank}
+                      </span>
+                    </div>
+                  </div>
+                  <span className="font-medium">
+                    {formatValue(player.value)}
                   </span>
-                  <span className="font-medium">{player.value}</span>
                 </li>
               ))}
             </ul>
