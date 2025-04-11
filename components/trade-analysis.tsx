@@ -42,8 +42,12 @@ export default function TradeAnalysis({
   );
 
   // Calculate the differences
-  const valueDifference = gettingValue - givingValue;
-  const redraftValueDifference = gettingRedraftValue - givingRedraftValue;
+  const valueDifference =
+    Number((gettingValue / 100).toFixed(1)) -
+    Number((givingValue / 100).toFixed(1));
+  const redraftValueDifference =
+    Number((gettingRedraftValue / 100).toFixed(1)) -
+    Number((givingRedraftValue / 100).toFixed(1));
   const totalValue = givingValue + gettingValue;
 
   // Format value for display
@@ -65,59 +69,65 @@ export default function TradeAnalysis({
 
   // Adjusted thresholds based on actual value ranges (values are in hundreds)
   if (
-    valueDifference > 200 ||
-    redraftValueDifference > 200 ||
+    valueDifference > 30 ||
+    redraftValueDifference > 30 ||
     rankDifference > 20
   ) {
     statusIcon = <PartyPopper className="h-5 w-5" />;
-    statusText = 'Highway robbery! Accept before they come to their senses.';
+    statusText =
+      "Make it happen. Cross your fingers your league doesn't veto this one pal.";
     statusClass = 'text-white';
   } else if (
-    valueDifference > 100 ||
-    redraftValueDifference > 100 ||
-    rankDifference > 10
+    valueDifference > 15 ||
+    redraftValueDifference > 15 ||
+    rankDifference > 12
   ) {
     statusIcon = <ThumbsUp className="h-5 w-5" />;
     statusText = "Solid win for you. They clearly didn't do their homework.";
     statusClass = 'text-gray-300';
   } else if (
-    valueDifference > 50 ||
-    redraftValueDifference > 50 ||
-    rankDifference > 5
+    valueDifference > 8 ||
+    redraftValueDifference > 8 ||
+    rankDifference > 6
   ) {
     statusIcon = <Laugh className="h-5 w-5" />;
-    statusText =
-      "Slight edge in your favor. They won't even notice what hit them.";
+    statusText = "A winning trade. I'd say go for it.";
     statusClass = 'text-gray-400';
   } else if (
-    valueDifference < -20 ||
-    redraftValueDifference < -20 ||
+    valueDifference < -30 ||
+    redraftValueDifference < -30 ||
     rankDifference < -20
   ) {
     statusIcon = <Skull className="h-5 w-5" />;
     statusText =
-      'Are you trying to get fleeced? Maybe reconsider your life choices.';
+      'Yeah, sure if you want to ruin your season :D Maybe check your noggin bud.';
     statusClass = 'text-white';
   } else if (
-    valueDifference < -10 ||
-    redraftValueDifference < -10 ||
-    rankDifference < -10
+    valueDifference < -15 ||
+    redraftValueDifference < -15 ||
+    rankDifference < -12
   ) {
     statusIcon = <AlertTriangle className="h-5 w-5" />;
-    statusText = "You're getting the short end of the stick here. Hard pass.";
+    statusText =
+      "You're getting the short end of the stick here. I'm sorry, little one.";
     statusClass = 'text-gray-300';
   } else if (
-    valueDifference < -5 ||
-    redraftValueDifference < -50 ||
-    rankDifference < -5
+    valueDifference < -8 ||
+    redraftValueDifference < -8 ||
+    rankDifference < -6
   ) {
     statusIcon = <Frown className="h-5 w-5" />;
-    statusText = 'Slightly unfavorable. Ask for a kicker to even things out.';
+    statusText =
+      'Eh, losing just a tad bit, but not horrible. Ask for a kicker to even things out.';
     statusClass = 'text-gray-400';
   } else {
     statusIcon = <Meh className="h-5 w-5" />;
-    statusText = 'Dead even. Flip a coin or go with your gut.';
+    statusText = 'This trade is perfectly balanced, as all things should be.';
     statusClass = 'text-gray-500';
+  }
+
+  if (playersGiving.length > 4 || playersGetting.length > 4) {
+    statusText = 'Lol, are you sure this is going to work?';
   }
 
   // Calculate percentages for the progress bar
@@ -125,7 +135,7 @@ export default function TradeAnalysis({
   const gettingPercent =
     totalValue > 0 ? (gettingValue / totalValue) * 100 : 50;
 
-  if (playersGiving.length === 0 && playersGetting.length === 0) {
+  if (playersGiving.length === 0 || playersGetting.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
         <p>Select players on both sides to see analysis</p>
@@ -145,15 +155,17 @@ export default function TradeAnalysis({
         {valueDifference !== 0 && (
           <div className="text-sm text-muted-foreground mt-1 space-y-1">
             <p>
-              {Math.abs(valueDifference)} point{' '}
-              {Math.abs(valueDifference) === 1 ? 'difference' : 'differences'}{' '}
+              {Math.abs(valueDifference).toFixed(1)} point{' '}
+              {Math.abs(valueDifference).toFixed(1) === '1.0'
+                ? 'difference'
+                : 'differences'}{' '}
               in
               {valueDifference > 0 ? ' your favor' : ' their favor'}
             </p>
             {redraftValueDifference !== 0 && (
               <p>
-                {Math.abs(redraftValueDifference)} redraft value{' '}
-                {Math.abs(redraftValueDifference) === 1
+                {Math.abs(redraftValueDifference).toFixed(1)} redraft value{' '}
+                {Math.abs(redraftValueDifference).toFixed(1) === '1.0'
                   ? 'difference'
                   : 'differences'}{' '}
                 in
