@@ -182,7 +182,7 @@ export default function TradeAnalysis({
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-4 items-center">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
         <div className="text-center">
           <p className="text-sm font-medium mb-1">You Give</p>
           <p className="text-2xl font-bold">{formatValue(givingValue)}</p>
@@ -227,29 +227,29 @@ export default function TradeAnalysis({
           />
           <div
             className={cn(
-              valueDifference > 2000 ||
-                redraftValueDifference > 2000 ||
+              valueDifference > 30 ||
+                redraftValueDifference > 30 ||
                 rankDifference > 20
                 ? 'bg-green-500 dark:bg-green-400'
-                : valueDifference > 1000 ||
-                  redraftValueDifference > 1000 ||
-                  rankDifference > 10
+                : valueDifference > 15 ||
+                  redraftValueDifference > 15 ||
+                  rankDifference > 12
                 ? 'bg-green-600 dark:bg-green-500'
-                : valueDifference > 500 ||
-                  redraftValueDifference > 500 ||
-                  rankDifference > 5
+                : valueDifference > 8 ||
+                  redraftValueDifference > 8 ||
+                  rankDifference > 6
                 ? 'bg-green-700 dark:bg-green-600'
-                : valueDifference < -2000 ||
-                  redraftValueDifference < -2000 ||
+                : valueDifference < -30 ||
+                  redraftValueDifference < -30 ||
                   rankDifference < -20
-                ? 'bg-red-500 dark:bg-red-400'
-                : valueDifference < -1000 ||
-                  redraftValueDifference < -1000 ||
-                  rankDifference < -10
+                ? 'bg-red-500 dark:text-red-400'
+                : valueDifference < -15 ||
+                  redraftValueDifference < -15 ||
+                  rankDifference < -12
                 ? 'bg-red-600 dark:bg-red-500'
-                : valueDifference < -500 ||
-                  redraftValueDifference < -500 ||
-                  rankDifference < -5
+                : valueDifference < -8 ||
+                  redraftValueDifference < -8 ||
+                  rankDifference < -6
                 ? 'bg-red-700 dark:bg-red-600'
                 : 'bg-amber-500 dark:bg-amber-400'
             )}
@@ -263,14 +263,14 @@ export default function TradeAnalysis({
       </div>
 
       {playersGiving.length > 0 && playersGetting.length > 0 && (
-        <div className="grid md:grid-cols-2 gap-6 pt-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4">
           <div className="space-y-3">
             <h3 className="text-sm font-medium">Players You're Giving</h3>
             <ul className="space-y-2 divide-y divide-border/40">
               {playersGiving.map((player) => (
                 <li
                   key={player.id}
-                  className="flex justify-between text-sm pt-2"
+                  className="flex flex-col sm:flex-row justify-between text-sm pt-2 gap-2"
                 >
                   <div className="space-y-1">
                     <span className="font-medium">
@@ -284,7 +284,7 @@ export default function TradeAnalysis({
                       </span>
                     </div>
                   </div>
-                  <span className="font-medium">
+                  <span className="font-medium sm:text-right">
                     {formatValue(player.value)}
                   </span>
                 </li>
@@ -297,7 +297,7 @@ export default function TradeAnalysis({
               {playersGetting.map((player) => (
                 <li
                   key={player.id}
-                  className="flex justify-between text-sm pt-2"
+                  className="flex flex-col sm:flex-row justify-between text-sm pt-2 gap-2"
                 >
                   <div className="space-y-1">
                     <span className="font-medium">
@@ -311,7 +311,7 @@ export default function TradeAnalysis({
                       </span>
                     </div>
                   </div>
-                  <span className="font-medium">
+                  <span className="font-medium sm:text-right">
                     {formatValue(player.value)}
                   </span>
                 </li>

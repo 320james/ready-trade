@@ -40,7 +40,7 @@ export default function TradeAnalyzer() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">League Type</label>
               <select
@@ -110,7 +110,7 @@ export default function TradeAnalyzer() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 md:grid-cols-2 md:gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
         <Card className="border-gray-800/20 dark:border-gray-300/10">
           <CardHeader className="pb-3">
             <CardTitle>Players You're Giving</CardTitle>

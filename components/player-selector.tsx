@@ -150,28 +150,29 @@ export default function PlayerSelector({
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Loading players...
+                <span className="truncate">Loading players...</span>
               </>
             ) : error ? (
               <>
                 <AlertTriangle className="mr-2 h-4 w-4" />
-                {error}
+                <span className="truncate">{error}</span>
               </>
             ) : (
               <>
-                Select players
+                <span className="truncate">Select players</span>
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </>
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0">
+        <PopoverContent className="w-full p-0" align="start">
           <Command>
             <CommandInput
               placeholder="Search players..."
               value={inputValue}
               onValueChange={handleInputChange}
               ref={inputRef}
+              className="w-full"
             />
             <CommandList>
               <CommandEmpty>
@@ -179,16 +180,17 @@ export default function PlayerSelector({
                   ? 'No players found.'
                   : 'Start typing to search players...'}
               </CommandEmpty>
-              <CommandGroup className="max-h-64 overflow-y-auto">
+              <CommandGroup className="max-h-[300px] overflow-y-auto">
                 {filteredPlayers.map((player) => (
                   <CommandItem
                     key={player.id}
                     value={player.name}
                     onSelect={() => handleSelect(player)}
+                    className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2"
                   >
                     <Check className={cn('mr-2 h-4 w-4', 'opacity-0')} />
-                    <span>{player.name}</span>
-                    <span className="ml-auto text-sm text-muted-foreground">
+                    <span className="font-medium truncate">{player.name}</span>
+                    <span className="text-xs sm:text-sm text-muted-foreground truncate">
                       {player.position} - {player.team}
                     </span>
                   </CommandItem>
@@ -204,13 +206,13 @@ export default function PlayerSelector({
           <Badge
             key={player.id}
             variant="secondary"
-            className="flex items-center gap-1 py-1.5"
+            className="flex items-center gap-1 py-1.5 max-w-full"
           >
-            {player.name}
+            <span className="truncate">{player.name}</span>
             <Button
               variant="ghost"
               size="sm"
-              className="h-4 w-4 p-0 hover:bg-transparent"
+              className="h-4 w-4 p-0 hover:bg-transparent flex-shrink-0"
               onClick={() => handleRemove(player.id)}
             >
               <X className="h-3 w-3" />
