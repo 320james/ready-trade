@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Check, ChevronsUpDown, X, Loader2, AlertTriangle } from 'lucide-react';
 import { useDebouncedCallback } from 'use-debounce';
 import {
@@ -39,6 +39,7 @@ export default function PlayerSelector({
   leagueSettings,
 }: PlayerSelectorProps) {
   const [open, setOpen] = useState(false);
+  const [inputValue, setInputValue] = useState('');
   const [search, setSearch] = useState('');
   const [players, setPlayers] = useState<Player[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -87,14 +88,23 @@ export default function PlayerSelector({
     setSearch(value);
   }, 300);
 
-  const filteredPlayers = players.filter(
-    (player) =>
-      !selectedPlayers.some((selected) => selected.id === player.id) &&
-      player.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const handleInputChange = (value: string) => {
+    setInputValue(value);
+    debouncedSearch(value);
+  };
+
+  const filteredPlayers = useMemo(() => {
+    const searchLower = search.toLowerCase();
+    return players.filter(
+      (player) =>
+        !selectedPlayers.some((selected) => selected.id === player.id) &&
+        player.name.toLowerCase().includes(searchLower)
+    );
+  }, [players, selectedPlayers, search]);
 
   const handleSelect = (player: Player) => {
     onChange([...selectedPlayers, player]);
+    setInputValue('');
     setSearch('');
     if (inputRef.current) {
       inputRef.current.focus();
@@ -138,8 +148,8 @@ export default function PlayerSelector({
           <Command>
             <CommandInput
               placeholder="Search players..."
-              value={search}
-              onValueChange={debouncedSearch}
+              value={inputValue}
+              onValueChange={handleInputChange}
               ref={inputRef}
             />
             <CommandList>
