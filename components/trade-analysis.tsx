@@ -145,7 +145,7 @@ export default function TradeAnalysis({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col items-center justify-center gap-2 py-3 px-4 bg-secondary rounded-lg">
+      <div className="flex flex-col items-center justify-center gap-2 py-5 px-4 bg-secondary rounded-lg mt-3">
         <div className="flex items-center gap-2">
           {statusIcon}
           <span className={statusClass}>{statusText}</span>
