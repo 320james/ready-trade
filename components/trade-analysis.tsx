@@ -9,7 +9,7 @@ import {
   ThumbsUp,
   Laugh,
   Frown,
-  Meh,
+  Scale,
   PartyPopper,
   Skull,
 } from 'lucide-react';
@@ -65,65 +65,65 @@ export default function TradeAnalysis({
   // Determine if the trade is good, bad, or neutral with adjusted thresholds
   let statusIcon = <Minus className="h-5 w-5" />;
   let statusText = 'This trade is perfectly balanced, as all things should be.';
-  let statusClass = 'text-gray-500';
+  const statusClass = cn('flex items-center gap-2 p-4 rounded-lg', {
+    'bg-red-500/10 text-red-500 dark:text-red-400': valueDifference < -30,
+    'bg-yellow-500/10 text-yellow-500 dark:text-yellow-400':
+      valueDifference >= -30 && valueDifference < -15,
+    'bg-green-500/10 text-green-500 dark:text-green-400':
+      valueDifference >= -15 && valueDifference < 15,
+    'bg-blue-500/10 text-blue-500 dark:text-blue-400': valueDifference >= 15,
+  });
 
   // Adjusted thresholds based on actual value ranges (values are in hundreds)
   if (
-    valueDifference > 30 ||
-    redraftValueDifference > 30 ||
-    rankDifference > 20
+    valueDifference >= 30 ||
+    redraftValueDifference >= 30 ||
+    rankDifference >= 20
   ) {
     statusIcon = <PartyPopper className="h-5 w-5" />;
     statusText =
       "Make it happen. Cross your fingers your league doesn't veto this one pal.";
-    statusClass = 'text-white';
   } else if (
-    valueDifference > 15 ||
-    redraftValueDifference > 15 ||
-    rankDifference > 12
+    valueDifference >= 15 ||
+    redraftValueDifference >= 15 ||
+    rankDifference >= 12
   ) {
     statusIcon = <ThumbsUp className="h-5 w-5" />;
     statusText = "Solid win for you. They clearly didn't do their homework.";
-    statusClass = 'text-gray-300';
   } else if (
-    valueDifference > 8 ||
-    redraftValueDifference > 8 ||
-    rankDifference > 6
+    valueDifference >= 8 ||
+    redraftValueDifference >= 8 ||
+    rankDifference >= 6
   ) {
     statusIcon = <Laugh className="h-5 w-5" />;
     statusText = "A winning trade. I'd say go for it.";
-    statusClass = 'text-gray-400';
   } else if (
-    valueDifference < -30 ||
-    redraftValueDifference < -30 ||
-    rankDifference < -20
+    valueDifference <= -30 ||
+    redraftValueDifference <= -30 ||
+    rankDifference <= -20
   ) {
     statusIcon = <Skull className="h-5 w-5" />;
     statusText =
       'Yeah, sure if you want to ruin your season :D Maybe check your noggin bud.';
-    statusClass = 'text-white';
   } else if (
-    valueDifference < -15 ||
-    redraftValueDifference < -15 ||
-    rankDifference < -12
+    valueDifference <= -15 ||
+    redraftValueDifference <= -15 ||
+    rankDifference <= -12
   ) {
     statusIcon = <AlertTriangle className="h-5 w-5" />;
     statusText =
       "You're getting the short end of the stick here. I'm sorry, little one.";
-    statusClass = 'text-gray-300';
   } else if (
-    valueDifference < -8 ||
-    redraftValueDifference < -8 ||
-    rankDifference < -6
+    valueDifference <= -8 ||
+    redraftValueDifference <= -8 ||
+    rankDifference <= -6
   ) {
     statusIcon = <Frown className="h-5 w-5" />;
     statusText =
       'Eh, losing just a tad bit, but not horrible. Ask for a kicker to even things out.';
-    statusClass = 'text-gray-400';
   } else {
-    statusIcon = <Meh className="h-5 w-5" />;
-    statusText = 'This trade is perfectly balanced, as all things should be.';
-    statusClass = 'text-gray-500';
+    statusIcon = <Scale className="h-5 w-5" />;
+    statusText = 'This trade is balanced, as all things should be.';
   }
 
   if (playersGiving.length > 4 || playersGetting.length > 4) {
@@ -148,9 +148,7 @@ export default function TradeAnalysis({
       <div className="flex flex-col items-center justify-center gap-2 py-3 px-4 bg-secondary rounded-lg">
         <div className="flex items-center gap-2">
           {statusIcon}
-          <span className={cn('text-lg font-medium', statusClass)}>
-            {statusText}
-          </span>
+          <span className={statusClass}>{statusText}</span>
         </div>
         {valueDifference !== 0 && (
           <div className="text-sm text-muted-foreground mt-1 space-y-1">

@@ -1,6 +1,6 @@
-import TradeAnalyzer from "@/components/trade-analyzer"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { ArrowLeftRight } from "lucide-react"
+import TradeAnalyzer from '@/components/trade-analyzer';
+import { ThemeToggle } from '@/components/theme-toggle';
+import { Rotate3D } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -8,18 +8,22 @@ export default function Home() {
       <header className="container mx-auto py-6 px-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <div className="bg-gray-800 dark:bg-gray-200 rounded-full p-2">
-              <ArrowLeftRight className="h-6 w-6 text-gray-200 dark:text-gray-800" />
+            <div className="rounded-full p-2">
+              <Rotate3D className="h-8 w-8 dark:text-gray-200 text-gray-800" />
             </div>
-            <h1 className="text-2xl font-bold sm:text-3xl">Ready Trade</h1>
+            <h1 className="text-2xl font-bold sm:text-2xl">Ready Trade</h1>
           </div>
           <ThemeToggle />
         </div>
       </header>
       <main className="container mx-auto py-6 px-4">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-xl font-medium text-center mb-2">Fantasy Football Trade Analyzer</h2>
-          <p className="text-center text-muted-foreground mb-8">Make smarter trades with instant analysis</p>
+          <h2 className="text-xl font-medium text-center mb-4">
+            The only NFL Fantasy Football Trade Analyzer you need.
+          </h2>
+          <p className="text-center text-muted-foreground mb-8">
+            Make smarter trades with instant analysis
+          </p>
           <TradeAnalyzer />
         </div>
       </main>
@@ -29,5 +33,5 @@ export default function Home() {
         </p>
       </footer>
     </div>
-  )
+  );
 }
