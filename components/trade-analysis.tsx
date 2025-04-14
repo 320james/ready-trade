@@ -19,11 +19,55 @@ interface TradeAnalysisProps {
   playersGetting: Player[];
 }
 
+// Status color classes
+const STATUS_COLORS = {
+  red: 'bg-red-500/10 text-red-500 dark:text-red-400',
+  yellow: 'bg-yellow-500/10 text-yellow-500 dark:text-yellow-400',
+  green: 'bg-green-500/10 text-green-500 dark:text-green-400',
+  blue: 'bg-blue-500/10 text-blue-500 dark:text-blue-400',
+};
+
+// Progress bar color classes
+const PROGRESS_COLORS = {
+  veryGood: 'bg-green-500 dark:bg-green-400',
+  good: 'bg-green-600 dark:bg-green-500',
+  slightlyGood: 'bg-green-700 dark:bg-green-600',
+  veryBad: 'bg-red-500 dark:bg-red-400',
+  bad: 'bg-red-600 dark:bg-red-500',
+  slightlyBad: 'bg-red-700 dark:bg-red-600',
+  neutral: 'bg-amber-500 dark:bg-amber-400',
+};
+
+// Player list item component
+const PlayerListItem = ({ player }: { player: Player }) => {
+  const formatValue = (value: number) => (value / 100).toFixed(1);
+
+  return (
+    <li className="flex flex-col sm:flex-row justify-between text-sm pt-2 gap-2">
+      <div className="space-y-1">
+        <span className="font-medium">
+          {player.name} ({player.position})
+        </span>
+        <div className="text-xs text-muted-foreground">
+          <span>Overall Rank: #{player.overallRank}</span>
+          <span className="mx-2">•</span>
+          <span>
+            {player.position} Rank: #{player.positionRank}
+          </span>
+        </div>
+      </div>
+      <span className="font-medium sm:text-right">
+        {formatValue(player.value)}
+      </span>
+    </li>
+  );
+};
+
 export default function TradeAnalysis({
   playersGiving,
   playersGetting,
 }: TradeAnalysisProps) {
-  // Calculate total value for each side using both value and redraftValue
+  // Calculate total values
   const givingValue = playersGiving.reduce(
     (sum, player) => sum + player.value,
     0
@@ -41,7 +85,7 @@ export default function TradeAnalysis({
     0
   );
 
-  // Calculate the differences
+  // Calculate differences
   const valueDifference =
     Number((gettingValue / 100).toFixed(1)) -
     Number((givingValue / 100).toFixed(1));
@@ -50,9 +94,6 @@ export default function TradeAnalysis({
     Number((givingRedraftValue / 100).toFixed(1));
   const totalValue = givingValue + gettingValue;
 
-  // Format value for display
-  const formatValue = (value: number) => (value / 100).toFixed(1);
-
   // Calculate average ranks
   const givingAvgRank =
     playersGiving.reduce((sum, player) => sum + player.overallRank, 0) /
@@ -60,21 +101,13 @@ export default function TradeAnalysis({
   const gettingAvgRank =
     playersGetting.reduce((sum, player) => sum + player.overallRank, 0) /
     (playersGetting.length || 1);
-  const rankDifference = givingAvgRank - gettingAvgRank; // Lower rank is better
+  const rankDifference = givingAvgRank - gettingAvgRank;
 
-  // Determine if the trade is good, bad, or neutral with adjusted thresholds
+  // Determine trade status
   let statusIcon = <Minus className="h-5 w-5" />;
   let statusText = 'This trade is perfectly balanced, as all things should be.';
-  const statusClass = cn('p-4 rounded-lg max-w-[700px]', {
-    'bg-red-500/10 text-red-500 dark:text-red-400': valueDifference < -30,
-    'bg-yellow-500/10 text-yellow-500 dark:text-yellow-400':
-      valueDifference >= -30 && valueDifference < -15,
-    'bg-green-500/10 text-green-500 dark:text-green-400':
-      valueDifference >= -15 && valueDifference < 15,
-    'bg-blue-500/10 text-blue-500 dark:text-blue-400': valueDifference >= 15,
-  });
+  let statusColor = STATUS_COLORS.green;
 
-  // Adjusted thresholds based on actual value ranges (values are in hundreds)
   if (
     valueDifference >= 30 ||
     redraftValueDifference >= 30 ||
@@ -83,6 +116,7 @@ export default function TradeAnalysis({
     statusIcon = <PartyPopper className="h-5 w-5" />;
     statusText =
       "Make it happen. Cross your fingers your league doesn't veto this one pal.";
+    statusColor = STATUS_COLORS.blue;
   } else if (
     valueDifference >= 15 ||
     redraftValueDifference >= 15 ||
@@ -90,6 +124,7 @@ export default function TradeAnalysis({
   ) {
     statusIcon = <ThumbsUp className="h-5 w-5" />;
     statusText = "Solid win for you. They clearly didn't do their homework.";
+    statusColor = STATUS_COLORS.blue;
   } else if (
     valueDifference >= 8 ||
     redraftValueDifference >= 8 ||
@@ -97,6 +132,7 @@ export default function TradeAnalysis({
   ) {
     statusIcon = <Laugh className="h-5 w-5" />;
     statusText = "A winning trade. I'd say go for it.";
+    statusColor = STATUS_COLORS.green;
   } else if (
     valueDifference <= -30 ||
     redraftValueDifference <= -30 ||
@@ -105,6 +141,7 @@ export default function TradeAnalysis({
     statusIcon = <Skull className="h-5 w-5" />;
     statusText =
       'Yeah, sure if you want to ruin your season :D Maybe check your noggin bud.';
+    statusColor = STATUS_COLORS.red;
   } else if (
     valueDifference <= -15 ||
     redraftValueDifference <= -15 ||
@@ -113,6 +150,7 @@ export default function TradeAnalysis({
     statusIcon = <AlertTriangle className="h-5 w-5" />;
     statusText =
       "You're getting the short end of the stick here. I'm sorry, little one.";
+    statusColor = STATUS_COLORS.red;
   } else if (
     valueDifference <= -8 ||
     redraftValueDifference <= -8 ||
@@ -121,10 +159,59 @@ export default function TradeAnalysis({
     statusIcon = <Frown className="h-5 w-5" />;
     statusText =
       'Eh, losing just a tad bit, but not horrible. Ask for a kicker to even things out.';
+    statusColor = STATUS_COLORS.yellow;
   } else {
     statusIcon = <Scale className="h-5 w-5" />;
     statusText = 'This trade is balanced, as all things should be.';
+    statusColor = STATUS_COLORS.green;
   }
+
+  // Calculate progress bar colors
+  const getProgressColor = () => {
+    if (
+      valueDifference >= 30 ||
+      redraftValueDifference >= 30 ||
+      rankDifference >= 20
+    ) {
+      return PROGRESS_COLORS.veryGood;
+    }
+    if (
+      valueDifference >= 15 ||
+      redraftValueDifference >= 15 ||
+      rankDifference >= 12
+    ) {
+      return PROGRESS_COLORS.good;
+    }
+    if (
+      valueDifference >= 8 ||
+      redraftValueDifference >= 8 ||
+      rankDifference >= 6
+    ) {
+      return PROGRESS_COLORS.slightlyGood;
+    }
+    if (
+      valueDifference <= -30 ||
+      redraftValueDifference <= -30 ||
+      rankDifference <= -20
+    ) {
+      return PROGRESS_COLORS.veryBad;
+    }
+    if (
+      valueDifference <= -15 ||
+      redraftValueDifference <= -15 ||
+      rankDifference <= -12
+    ) {
+      return PROGRESS_COLORS.bad;
+    }
+    if (
+      valueDifference <= -8 ||
+      redraftValueDifference <= -8 ||
+      rankDifference <= -6
+    ) {
+      return PROGRESS_COLORS.slightlyBad;
+    }
+    return PROGRESS_COLORS.neutral;
+  };
 
   // Calculate percentages for the progress bar
   const givingPercent = totalValue > 0 ? (givingValue / totalValue) * 100 : 50;
@@ -145,16 +232,10 @@ export default function TradeAnalysis({
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <div className="flex-shrink-0">{statusIcon}</div>
           <div
-            className={cn('p-4 rounded-lg max-w-[800px] flex justify-center', {
-              'bg-red-500/10 text-red-500 dark:text-red-400':
-                valueDifference < -30,
-              'bg-yellow-500/10 text-yellow-500 dark:text-yellow-400':
-                valueDifference >= -30 && valueDifference < -15,
-              'bg-green-500/10 text-green-500 dark:text-green-400':
-                valueDifference >= -15 && valueDifference < 15,
-              'bg-blue-500/10 text-blue-500 dark:text-blue-400':
-                valueDifference >= 15,
-            })}
+            className={cn(
+              'p-4 rounded-lg max-w-[800px] flex justify-center',
+              statusColor
+            )}
           >
             <p className="text-center">{statusText}</p>
           </div>
@@ -166,8 +247,7 @@ export default function TradeAnalysis({
               {Math.abs(valueDifference).toFixed(1) === '1.0'
                 ? 'difference'
                 : 'differences'}{' '}
-              in
-              {valueDifference > 0 ? ' your favor' : ' their favor'}
+              in {valueDifference > 0 ? 'your favor' : 'their favor'}
             </p>
             {redraftValueDifference !== 0 && (
               <p className="text-sm text-muted-foreground text-center">
@@ -175,8 +255,7 @@ export default function TradeAnalysis({
                 {Math.abs(redraftValueDifference).toFixed(1) === '1.0'
                   ? 'difference'
                   : 'differences'}{' '}
-                in
-                {redraftValueDifference > 0 ? ' your favor' : ' their favor'}
+                in {redraftValueDifference > 0 ? 'your favor' : 'their favor'}
               </p>
             )}
             {rankDifference !== 0 && (
@@ -192,7 +271,7 @@ export default function TradeAnalysis({
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
         <div className="text-center">
           <p className="text-sm font-medium mb-1">You Give</p>
-          <p className="text-2xl font-bold">{formatValue(givingValue)}</p>
+          <p className="text-2xl font-bold">{(givingValue / 100).toFixed(1)}</p>
           <p className="text-sm text-muted-foreground">
             Avg Rank: {givingAvgRank.toFixed(1)}
           </p>
@@ -204,7 +283,9 @@ export default function TradeAnalysis({
 
         <div className="text-center">
           <p className="text-sm font-medium mb-1">You Get</p>
-          <p className="text-2xl font-bold">{formatValue(gettingValue)}</p>
+          <p className="text-2xl font-bold">
+            {(gettingValue / 100).toFixed(1)}
+          </p>
           <p className="text-sm text-muted-foreground">
             Avg Rank: {gettingAvgRank.toFixed(1)}
           </p>
@@ -224,7 +305,7 @@ export default function TradeAnalysis({
             )}
           >
             {valueDifference > 0 ? '+' : ''}
-            {formatValue(valueDifference)}
+            {valueDifference.toFixed(1)}
           </span>
         </div>
         <div className="h-2.5 flex rounded-full overflow-hidden">
@@ -233,33 +314,7 @@ export default function TradeAnalysis({
             style={{ width: `${givingPercent}%` }}
           />
           <div
-            className={cn(
-              valueDifference > 30 ||
-                redraftValueDifference > 30 ||
-                rankDifference > 20
-                ? 'bg-green-500 dark:bg-green-400'
-                : valueDifference > 15 ||
-                  redraftValueDifference > 15 ||
-                  rankDifference > 12
-                ? 'bg-green-600 dark:bg-green-500'
-                : valueDifference > 8 ||
-                  redraftValueDifference > 8 ||
-                  rankDifference > 6
-                ? 'bg-green-700 dark:bg-green-600'
-                : valueDifference < -30 ||
-                  redraftValueDifference < -30 ||
-                  rankDifference < -20
-                ? 'bg-red-500 dark:text-red-400'
-                : valueDifference < -15 ||
-                  redraftValueDifference < -15 ||
-                  rankDifference < -12
-                ? 'bg-red-600 dark:bg-red-500'
-                : valueDifference < -8 ||
-                  redraftValueDifference < -8 ||
-                  rankDifference < -6
-                ? 'bg-red-700 dark:bg-red-600'
-                : 'bg-amber-500 dark:bg-amber-400'
-            )}
+            className={getProgressColor()}
             style={{ width: `${gettingPercent}%` }}
           />
         </div>
@@ -275,26 +330,7 @@ export default function TradeAnalysis({
             <h3 className="text-sm font-medium">Players You're Giving</h3>
             <ul className="space-y-2 divide-y divide-border/40">
               {playersGiving.map((player) => (
-                <li
-                  key={player.id}
-                  className="flex flex-col sm:flex-row justify-between text-sm pt-2 gap-2"
-                >
-                  <div className="space-y-1">
-                    <span className="font-medium">
-                      {player.name} ({player.position})
-                    </span>
-                    <div className="text-xs text-muted-foreground">
-                      <span>Overall Rank: #{player.overallRank}</span>
-                      <span className="mx-2">•</span>
-                      <span>
-                        {player.position} Rank: #{player.positionRank}
-                      </span>
-                    </div>
-                  </div>
-                  <span className="font-medium sm:text-right">
-                    {formatValue(player.value)}
-                  </span>
-                </li>
+                <PlayerListItem key={player.id} player={player} />
               ))}
             </ul>
           </div>
@@ -302,26 +338,7 @@ export default function TradeAnalysis({
             <h3 className="text-sm font-medium">Players You're Getting</h3>
             <ul className="space-y-2 divide-y divide-border/40">
               {playersGetting.map((player) => (
-                <li
-                  key={player.id}
-                  className="flex flex-col sm:flex-row justify-between text-sm pt-2 gap-2"
-                >
-                  <div className="space-y-1">
-                    <span className="font-medium">
-                      {player.name} ({player.position})
-                    </span>
-                    <div className="text-xs text-muted-foreground">
-                      <span>Overall Rank: #{player.overallRank}</span>
-                      <span className="mx-2">•</span>
-                      <span>
-                        {player.position} Rank: #{player.positionRank}
-                      </span>
-                    </div>
-                  </div>
-                  <span className="font-medium sm:text-right">
-                    {formatValue(player.value)}
-                  </span>
-                </li>
+                <PlayerListItem key={player.id} player={player} />
               ))}
             </ul>
           </div>
