@@ -44,6 +44,7 @@ export default function PlayerSelector({
   const [players, setPlayers] = useState<Player[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isThrottled, setIsThrottled] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const selectedPlayerIds = useMemo(
     () => new Set(selectedPlayers.map((p) => p.id)),
@@ -54,6 +55,8 @@ export default function PlayerSelector({
   const [apiCache, setApiCache] = useState<Record<string, Player[]>>({});
 
   const loadPlayers = useCallback(async () => {
+    if (isThrottled) return;
+
     const cacheKey = JSON.stringify(leagueSettings);
 
     // Check cache first
@@ -96,14 +99,17 @@ export default function PlayerSelector({
     } finally {
       setIsLoading(false);
     }
-  }, [leagueSettings, apiCache]);
+  }, [leagueSettings, apiCache, isThrottled]);
 
   useEffect(() => {
     loadPlayers();
   }, [loadPlayers]);
 
   const debouncedSearch = useDebouncedCallback((value: string) => {
+    if (isThrottled) return;
     setSearch(value);
+    setIsThrottled(true);
+    setTimeout(() => setIsThrottled(false), 1000); // Throttle for 1 second
   }, 300);
 
   const handleInputChange = (value: string) => {

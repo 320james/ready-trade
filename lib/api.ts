@@ -8,9 +8,39 @@ import type {
 const FANTASYCALC_API = 'https://api.fantasycalc.com/values/current';
 const FFCALCULATOR_API = 'https://fantasyfootballcalculator.com/api/v1/adp';
 
+// Rate limiting configuration
+const RATE_LIMIT = {
+  tokens: 10, // Maximum tokens in bucket
+  refillRate: 1, // Tokens per second
+  lastRefill: Date.now(),
+  tokensAvailable: 10,
+};
+
+// Rate limiting function
+async function rateLimit() {
+  const now = Date.now();
+  const timePassed = (now - RATE_LIMIT.lastRefill) / 1000;
+  RATE_LIMIT.tokensAvailable = Math.min(
+    RATE_LIMIT.tokens,
+    RATE_LIMIT.tokensAvailable + timePassed * RATE_LIMIT.refillRate
+  );
+  RATE_LIMIT.lastRefill = now;
+
+  if (RATE_LIMIT.tokensAvailable < 1) {
+    const waitTime =
+      ((1 - RATE_LIMIT.tokensAvailable) / RATE_LIMIT.refillRate) * 1000;
+    await new Promise((resolve) => setTimeout(resolve, waitTime));
+    return rateLimit();
+  }
+
+  RATE_LIMIT.tokensAvailable -= 1;
+}
+
 export async function fetchFantasyCalcPlayers(
   params: FantasyCalcQueryParams
 ): Promise<FantasyCalcResponse> {
+  await rateLimit();
+
   const queryParams = new URLSearchParams();
 
   if (params.isDynasty !== undefined)
@@ -32,6 +62,8 @@ export async function fetchFantasyCalcPlayers(
 export async function fetchADPData(
   params: ADPQueryParams
 ): Promise<ADPResponse> {
+  await rateLimit();
+
   const queryParams = new URLSearchParams();
 
   if (params.teams !== undefined)
