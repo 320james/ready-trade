@@ -17,6 +17,10 @@ import {
 interface TradeAnalysisProps {
   playersGiving: Player[];
   playersGetting: Player[];
+  analysis: {
+    totalValueGiven: number;
+    totalValueReceived: number;
+  };
 }
 
 // Status color classes
@@ -37,6 +41,25 @@ const PROGRESS_COLORS = {
   slightlyBad: 'bg-red-700 dark:bg-red-600',
   neutral: 'bg-amber-500 dark:bg-amber-400',
 };
+
+// Trade analysis thresholds
+const VALUE_DIFFERENCES = {
+  VERY_GOOD: 20,
+  GOOD: 10,
+  SLIGHTLY_GOOD: 5,
+  SLIGHTLY_BAD: -5,
+  BAD: -10,
+  VERY_BAD: -20,
+} as const;
+
+const RANK_DIFFERENCES = {
+  VERY_GOOD: 10,
+  GOOD: 6,
+  SLIGHTLY_GOOD: 2,
+  SLIGHTLY_BAD: -2,
+  BAD: -6,
+  VERY_BAD: -10,
+} as const;
 
 // Player list item component
 const PlayerListItem = ({ player }: { player: Player }) => {
@@ -66,6 +89,7 @@ const PlayerListItem = ({ player }: { player: Player }) => {
 export default function TradeAnalysis({
   playersGiving,
   playersGetting,
+  analysis,
 }: TradeAnalysisProps) {
   // Calculate total values
   const givingValue = playersGiving.reduce(
@@ -92,7 +116,7 @@ export default function TradeAnalysis({
   const redraftValueDifference =
     Number((gettingRedraftValue / 100).toFixed(1)) -
     Number((givingRedraftValue / 100).toFixed(1));
-  const totalValue = givingValue + gettingValue;
+  const totalValue = analysis.totalValueGiven + analysis.totalValueReceived;
 
   // Calculate average ranks
   const givingAvgRank =
@@ -109,52 +133,46 @@ export default function TradeAnalysis({
   let statusColor = STATUS_COLORS.green;
 
   if (
-    valueDifference >= 30 ||
-    redraftValueDifference >= 30 ||
-    rankDifference >= 20
+    valueDifference >= VALUE_DIFFERENCES.VERY_GOOD ||
+    rankDifference >= RANK_DIFFERENCES.VERY_GOOD
   ) {
     statusIcon = <PartyPopper className="h-5 w-5" />;
     statusText =
       "Make it happen. Cross your fingers your league doesn't veto this one pal.";
     statusColor = STATUS_COLORS.blue;
   } else if (
-    valueDifference >= 15 ||
-    redraftValueDifference >= 15 ||
-    rankDifference >= 12
+    valueDifference >= VALUE_DIFFERENCES.GOOD ||
+    rankDifference >= RANK_DIFFERENCES.GOOD
   ) {
     statusIcon = <ThumbsUp className="h-5 w-5" />;
     statusText = "Solid win for you. They clearly didn't do their homework.";
     statusColor = STATUS_COLORS.blue;
   } else if (
-    valueDifference >= 8 ||
-    redraftValueDifference >= 8 ||
-    rankDifference >= 6
+    valueDifference >= VALUE_DIFFERENCES.SLIGHTLY_GOOD ||
+    rankDifference >= RANK_DIFFERENCES.SLIGHTLY_GOOD
   ) {
     statusIcon = <Laugh className="h-5 w-5" />;
     statusText = "A winning trade. I'd say go for it.";
     statusColor = STATUS_COLORS.green;
   } else if (
-    valueDifference <= -30 ||
-    redraftValueDifference <= -30 ||
-    rankDifference <= -20
+    valueDifference <= VALUE_DIFFERENCES.VERY_BAD ||
+    rankDifference <= RANK_DIFFERENCES.VERY_BAD
   ) {
     statusIcon = <Skull className="h-5 w-5" />;
     statusText =
-      'Yeah, sure if you want to ruin your season :D Maybe check your noggin bud.';
+      'Yeah, sure if you want to ruin your season. Double check on that noggin bud.';
     statusColor = STATUS_COLORS.red;
   } else if (
-    valueDifference <= -15 ||
-    redraftValueDifference <= -15 ||
-    rankDifference <= -12
+    valueDifference <= VALUE_DIFFERENCES.BAD ||
+    rankDifference <= RANK_DIFFERENCES.BAD
   ) {
     statusIcon = <AlertTriangle className="h-5 w-5" />;
     statusText =
-      "You're getting the short end of the stick here. I'm sorry, little one.";
+      "Don't do this to yourself. You're getting the short end of the stick here.";
     statusColor = STATUS_COLORS.red;
   } else if (
-    valueDifference <= -8 ||
-    redraftValueDifference <= -8 ||
-    rankDifference <= -6
+    valueDifference <= VALUE_DIFFERENCES.SLIGHTLY_BAD ||
+    rankDifference <= RANK_DIFFERENCES.SLIGHTLY_BAD
   ) {
     statusIcon = <Frown className="h-5 w-5" />;
     statusText =
@@ -169,44 +187,38 @@ export default function TradeAnalysis({
   // Calculate progress bar colors
   const getProgressColor = () => {
     if (
-      valueDifference >= 30 ||
-      redraftValueDifference >= 30 ||
-      rankDifference >= 20
+      valueDifference >= VALUE_DIFFERENCES.VERY_GOOD ||
+      rankDifference >= RANK_DIFFERENCES.VERY_GOOD
     ) {
       return PROGRESS_COLORS.veryGood;
     }
     if (
-      valueDifference >= 15 ||
-      redraftValueDifference >= 15 ||
-      rankDifference >= 12
+      valueDifference >= VALUE_DIFFERENCES.GOOD ||
+      rankDifference >= RANK_DIFFERENCES.GOOD
     ) {
       return PROGRESS_COLORS.good;
     }
     if (
-      valueDifference >= 8 ||
-      redraftValueDifference >= 8 ||
-      rankDifference >= 6
+      valueDifference >= VALUE_DIFFERENCES.SLIGHTLY_GOOD ||
+      rankDifference >= RANK_DIFFERENCES.SLIGHTLY_GOOD
     ) {
       return PROGRESS_COLORS.slightlyGood;
     }
     if (
-      valueDifference <= -30 ||
-      redraftValueDifference <= -30 ||
-      rankDifference <= -20
+      valueDifference <= VALUE_DIFFERENCES.VERY_BAD ||
+      rankDifference <= RANK_DIFFERENCES.VERY_BAD
     ) {
       return PROGRESS_COLORS.veryBad;
     }
     if (
-      valueDifference <= -15 ||
-      redraftValueDifference <= -15 ||
-      rankDifference <= -12
+      valueDifference <= VALUE_DIFFERENCES.BAD ||
+      rankDifference <= RANK_DIFFERENCES.BAD
     ) {
       return PROGRESS_COLORS.bad;
     }
     if (
-      valueDifference <= -8 ||
-      redraftValueDifference <= -8 ||
-      rankDifference <= -6
+      valueDifference <= VALUE_DIFFERENCES.SLIGHTLY_BAD ||
+      rankDifference <= RANK_DIFFERENCES.SLIGHTLY_BAD
     ) {
       return PROGRESS_COLORS.slightlyBad;
     }
@@ -214,9 +226,10 @@ export default function TradeAnalysis({
   };
 
   // Calculate percentages for the progress bar
-  const givingPercent = totalValue > 0 ? (givingValue / totalValue) * 100 : 50;
+  const givingPercent =
+    totalValue > 0 ? (analysis.totalValueGiven / totalValue) * 100 : 50;
   const gettingPercent =
-    totalValue > 0 ? (gettingValue / totalValue) * 100 : 50;
+    totalValue > 0 ? (analysis.totalValueReceived / totalValue) * 100 : 50;
 
   if (playersGiving.length === 0 || playersGetting.length === 0) {
     return (
