@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -39,6 +39,12 @@ export default function TradeAnalyzer() {
     numTeams: 12,
     ppr: 1,
   });
+
+  // Reset players when league settings change
+  useEffect(() => {
+    setPlayersGiving([]);
+    setPlayersGetting([]);
+  }, [leagueSettings]);
 
   const handleReset = () => {
     setPlayersGiving([]);
