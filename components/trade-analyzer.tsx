@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { RefreshCw } from 'lucide-react';
 import PlayerSelector from '@/components/player-selector';
 import TradeAnalysis from '@/components/trade-analysis';
@@ -85,49 +86,20 @@ export default function TradeAnalyzer() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">League Type</label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    className="w-full justify-between"
-                  >
-                    {leagueSettings.isDynasty ? 'Dynasty' : 'Redraft'}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0">
-                  <Command>
-                    <CommandList>
-                      <CommandGroup>
-                        {leagueTypes.map((type) => (
-                          <CommandItem
-                            key={type.value}
-                            value={type.value}
-                            onSelect={() =>
-                              setLeagueSettings({
-                                ...leagueSettings,
-                                isDynasty: type.value === 'dynasty',
-                              })
-                            }
-                          >
-                            <Check
-                              className={cn(
-                                'mr-2 h-4 w-4',
-                                leagueSettings.isDynasty ===
-                                  (type.value === 'dynasty')
-                                  ? 'opacity-100'
-                                  : 'opacity-0'
-                              )}
-                            />
-                            {type.label}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Redraft</span>
+                <Switch
+                  id="league-type"
+                  checked={leagueSettings.isDynasty}
+                  onCheckedChange={(checked) =>
+                    setLeagueSettings({
+                      ...leagueSettings,
+                      isDynasty: checked,
+                    })
+                  }
+                />
+                <span className="text-sm text-muted-foreground">Dynasty</span>
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -178,48 +150,20 @@ export default function TradeAnalyzer() {
 
             <div className="space-y-2">
               <label className="text-sm font-medium">Number of QBs</label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    className="w-full justify-between"
-                  >
-                    {leagueSettings.numQbs} QB
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0">
-                  <Command>
-                    <CommandList>
-                      <CommandGroup>
-                        {qbOptions.map((qb) => (
-                          <CommandItem
-                            key={qb.value}
-                            value={qb.value}
-                            onSelect={() =>
-                              setLeagueSettings({
-                                ...leagueSettings,
-                                numQbs: parseInt(qb.value),
-                              })
-                            }
-                          >
-                            <Check
-                              className={cn(
-                                'mr-2 h-4 w-4',
-                                leagueSettings.numQbs === parseInt(qb.value)
-                                  ? 'opacity-100'
-                                  : 'opacity-0'
-                              )}
-                            />
-                            {qb.label}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">1 QB</span>
+                <Switch
+                  id="qb-count"
+                  checked={leagueSettings.numQbs === 2}
+                  onCheckedChange={(checked) =>
+                    setLeagueSettings({
+                      ...leagueSettings,
+                      numQbs: checked ? 2 : 1,
+                    })
+                  }
+                />
+                <span className="text-sm text-muted-foreground">2 QB</span>
+              </div>
             </div>
 
             <div className="space-y-2">
