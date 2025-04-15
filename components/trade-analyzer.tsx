@@ -109,7 +109,7 @@ export default function TradeAnalyzer() {
                   <Button
                     variant="outline"
                     role="combobox"
-                    className="w-full justify-between"
+                    className="w-44 justify-between"
                   >
                     {leagueSettings.numTeams} Teams
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -167,13 +167,15 @@ export default function TradeAnalyzer() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">PPR</label>
+              <label className="text-sm font-medium">
+                Points Per Reception
+              </label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     role="combobox"
-                    className="w-full justify-between"
+                    className="w-44 justify-between"
                   >
                     {pprOptions.find(
                       (option) => option.value === leagueSettings.ppr.toString()

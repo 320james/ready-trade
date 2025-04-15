@@ -19,10 +19,11 @@ export default function Home() {
       <main className="container mx-auto py-6 px-4">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-xl font-medium text-center mb-4">
-            The only NFL Fantasy Football Trade Analyzer you need.
+            NFL Fantasy Football Trade Analyzer
           </h2>
           <p className="text-center text-muted-foreground mb-8">
-            Make smarter trades with instant analysis
+            Make smarter trades with instant analysis. Because your team
+            matters.
           </p>
           <TradeAnalyzer />
         </div>
